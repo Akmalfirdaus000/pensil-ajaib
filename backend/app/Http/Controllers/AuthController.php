@@ -28,4 +28,23 @@ class AuthController extends Controller
             'token' => $token,
         ], 200);
     }
+      public function register(Request $request)
+    {
+        // Validasi data yang diterima dari request
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed', // Pastikan password konfirmasi ada
+        ]);
+
+        // Buat pengguna baru
+        $user = User::create([
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => Hash::make($validatedData['password']), // Hash password
+        ]);
+
+        // Optional: Anda bisa mengembalikan response yang sesuai setelah pendaftaran
+        return response()->json(['message' => 'User registered successfully', 'user' => $user], 201);
+    }
 }
